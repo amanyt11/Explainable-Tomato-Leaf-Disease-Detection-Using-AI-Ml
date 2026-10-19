@@ -54,6 +54,11 @@ st.markdown(
         color: white;
         box-shadow: 0 16px 36px rgba(16, 51, 36, 0.16);
         margin-bottom: 1.5rem;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    }
+    .hero:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 42px rgba(16, 51, 36, 0.22);
     }
     .hero-kicker {
         color: #9de2b5;
@@ -73,6 +78,12 @@ st.markdown(
         padding: 1rem 1.2rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         margin-bottom: 0.5rem;
+        transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(16, 51, 36, 0.1);
+        border-color: #82b998;
     }
     .metric-label {
         color: #647a6c;
@@ -95,6 +106,7 @@ st.markdown(
         font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 0.02em;
+        transition: all 0.25s ease;
     }
     .badge-green { background: #d7f5e1; color: #116936; border: 1px solid #b2e6c3; }
     .badge-orange { background: #fef0db; color: #b25e07; border: 1px solid #f9dab3; }
@@ -119,12 +131,70 @@ st.markdown(
         padding: 1.4rem;
         box-shadow: 0 6px 18px rgba(18, 61, 40, 0.05);
         margin-top: 1rem;
+        transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .treatment-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(18, 61, 40, 0.1);
+        border-color: #82b998;
     }
     .treatment-header {
         font-size: 1.15rem;
         font-weight: 750;
         color: #123d28;
         margin-bottom: 0.6rem;
+    }
+
+    /* Smooth Micro-interactions & Transitions */
+    .stButton>button {
+        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        border: 1px solid #c9dec5 !important;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(18, 61, 40, 0.16) !important;
+        border-color: #246a44 !important;
+    }
+    .stButton>button:active {
+        transform: translateY(0px) !important;
+    }
+
+    div[data-baseweb="tab-list"] button {
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1.1rem !important;
+    }
+    div[data-baseweb="tab-list"] button:hover {
+        background: rgba(36, 106, 68, 0.08) !important;
+    }
+
+    img {
+        border-radius: 14px;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease !important;
+    }
+    img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    div[data-testid="stProgress"] > div > div > div {
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    @keyframes smoothSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .fade-in {
+        animation: smoothSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     </style>
     """,
@@ -330,7 +400,7 @@ with tab_diagnosis:
 
             st.markdown(
                 f"""
-                <div style="background: white; border-radius: 18px; padding: 1.4rem 1.8rem; border-left: 8px solid {profile.color_code}; box-shadow: 0 8px 24px rgba(0,0,0,0.06); margin-bottom: 1.5rem;">
+                <div class="fade-in" style="background: white; border-radius: 18px; padding: 1.4rem 1.8rem; border-left: 8px solid {profile.color_code}; box-shadow: 0 8px 24px rgba(0,0,0,0.06); margin-bottom: 1.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                         <div>
                             <span class="status-badge {sev_badge_class}">Severity: {profile.severity}</span>

@@ -20,24 +20,50 @@ All four project milestones have been fully implemented, validated, and tested:
 
 ```mermaid
 flowchart TD
-    subgraph DataAndTraining["Training & Evaluation Pipeline"]
-        A["Leaf Image Dataset (data/raw/)"] --> B["Stratified Train/Val Split (80/20)"]
-        B --> C["Data Augmentation & Normalization"]
-        C --> D["Model Architecture Backbone<br/>(EfficientNet-B0 / ResNet-18 / ResNet-50 / MobileNetV3)"]
-        D --> E["AdamW Optimizer + CrossEntropyLoss"]
-        E --> F["Validation Evaluation & Confusion Matrix"]
-        F --> G["Best Model Checkpoint (models/best.pt)"]
+    %% Phase 1: Data Preparation
+    subgraph Phase1["Phase 1 · Data Discovery & Preprocessing"]
+        A["🍃 Raw Leaf Dataset (data/raw/)"] --> B["⚖️ Stratified 80/20 Train-Val Split"]
+        B --> C["🔄 Augmentation & Normalization (build_transforms)"]
     end
 
-    subgraph InferenceAndExplainability["Inference & Explainability Suite"]
-        H["Input Leaf Image (Upload or Built-in Sample)"] --> I["Forward Inference Pass"]
-        G --> I
-        I --> J["Top-K Softmax Probabilities"]
-        I --> K["Grad-CAM Engine (Backprop Gradients to Conv Layer)"]
-        K --> L["Feature Map Weighting & ReLU Activation"]
-        L --> M["Visual Inspection Grid (Original, Heatmap, Blend, Focus Mask)"]
-        J --> N["Agronomic Profile (Pathogen, Symptoms, Organic & Chemical Rx)"]
+    %% Phase 2: Model Training & Evaluation
+    subgraph Phase2["Phase 2 · Training & Model Convergence"]
+        C --> D["🧠 Conv Backbone (EfficientNet-B0 / ResNet / MobileNet)"]
+        D --> E["⚡ AdamW Optimization & CrossEntropyLoss"]
+        E --> F["📊 Multi-Class Validation & 10×10 Confusion Matrix"]
+        F --> G[("💾 Best Weights Checkpoint: models/best.pt")]
     end
+
+    %% Seamless Pipeline Transition
+    G ==>|"Seamless Model Weight Handoff"| H["📦 Cached Model Loader (@st.cache_resource)"]
+
+    %% Phase 3: Explainable Diagnostic Engine
+    subgraph Phase3["Phase 3 · Dual-Path Explainable Inference"]
+        UserLeaf["📸 Uploaded Photo / Built-in Leaf Sample"] --> TensorPrep["⚙️ Bilinear Resize (224×224) & RGB Normalization"]
+        H --> ForwardPass["🚀 Forward Inference Pass (model.eval)"]
+        TensorPrep --> ForwardPass
+        
+        ForwardPass --> ProbBranch["📈 Softmax Probability Distribution & Top-K Ranking"]
+        ForwardPass --> GradCAMBranch["🔍 Grad-CAM Gradient Backprop to Final Conv Layer"]
+        
+        GradCAMBranch --> HeatmapOverlay["🎨 Colorized Heatmap & Alpha-Blended Overlay"]
+        ProbBranch --> DiseaseProfileRx["📋 Agronomic Profile & Treatment Prescriptions"]
+    end
+
+    %% Phase 4: Diagnostic Delivery
+    subgraph Phase4["Phase 4 · Comprehensive Diagnostic Delivery"]
+        HeatmapOverlay --> VisualGrid["🖼️ 4-View Visual Explanation Grid<br/>(Original · Heatmap · Blend · Focus Mask)"]
+        DiseaseProfileRx --> ActionReport["🚨 Severity Triage & Grower Action Plan"]
+        VisualGrid --> FinalDiagnosis(["✅ Verified Explainable Leaf Diagnosis"])
+        ActionReport --> FinalDiagnosis
+    end
+
+    style G fill:#1b4d32,stroke:#2ecc71,stroke-width:2px,color:#fff
+    style FinalDiagnosis fill:#123a2a,stroke:#27ae60,stroke-width:3px,color:#fff
+    style Phase1 fill:#f9fcf9,stroke:#d0e6d6,stroke-width:1px
+    style Phase2 fill:#f4fbf5,stroke:#bce0c8,stroke-width:1px
+    style Phase3 fill:#f0f9f3,stroke:#a6d8b6,stroke-width:1px
+    style Phase4 fill:#eaf7ee,stroke:#89cca0,stroke-width:1px
 ```
 
 ---
