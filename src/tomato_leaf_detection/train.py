@@ -47,9 +47,10 @@ def train(
     config: TrainingConfig,
     device: torch.device,
     pretrained: bool = True,
+    architecture: str = "efficientnet_b0",
 ) -> None:
     train_loader, validation_loader, class_names = create_dataloaders(data_dir, config)
-    model = build_model(class_names, pretrained=pretrained).to(device)
+    model = build_model(class_names, pretrained=pretrained, architecture=architecture).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = AdamW(
         model.parameters(),
@@ -76,6 +77,7 @@ def train(
                     "model_state": model.state_dict(),
                     "class_names": class_names,
                     "image_size": config.image_size,
+                    "architecture": architecture,
                     "history": history,
                 },
                 output,
@@ -86,6 +88,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train the tomato leaf baseline")
     parser.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     parser.add_argument("--output", type=Path, default=DEFAULT_CHECKPOINT)
+    parser.add_argument(
+        "--architecture",
+        type=str,
+        default="efficientnet_b0",
+        choices=("efficientnet_b0", "resnet18", "resnet50", "mobilenet_v3_large"),
+        help="Convolutional architecture backbone",
+    )
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--validation-fraction", type=float, default=0.2)
@@ -130,6 +139,7 @@ def main() -> None:
         config,
         device,
         pretrained=not args.no_pretrained,
+        architecture=args.architecture,
     )
 
 

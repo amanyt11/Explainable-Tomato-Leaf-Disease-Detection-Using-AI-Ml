@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  tomato-leaf-detection:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tomato_leaf_disease_detection
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./models:/app/models:ro
+      - ./data/samples:/app/data/samples:ro
+    restart: unless-stopped
