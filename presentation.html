@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainable Tomato Leaf Disease Detection Using AI/ML · Slide Deck</title>
+    <style>
+        :root {
+            --dark-forest: #103324;
+            --emerald: #1b5e3c;
+            --mint: #9de2b5;
+            --bg-light: #f7fbf7;
+            --card-bg: #ffffff;
+            --border: #d7e6dc;
+            --text-dark: #123726;
+            --text-muted: #5a6e64;
+            --gold: #e67e22;
+            --red: #c0392b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b1a13;
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Presentation Container */
+        #deck-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .slide {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-light);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            display: none;
+            flex-direction: column;
+            padding: 40px 50px;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.98);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            overflow: hidden;
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Slide Headers */
+        .kicker {
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--emerald);
+            margin-bottom: 6px;
+        }
+        .title {
+            font-size: 2.1rem;
+            font-weight: 850;
+            color: var(--dark-forest);
+            line-height: 1.15;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        /* Slide Content Cards */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            height: 100%;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            height: 100%;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            height: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .card p, .card li {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .card ul { list-style: none; }
+        .card ul li::before {
+            content: "• ";
+            color: var(--emerald);
+            font-weight: bold;
+        }
+
+        /* Hero Slide 1 */
+        .hero-slide {
+            background: linear-gradient(135deg, #103324 0%, #174d34 60%, #246a44 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+        }
+        .hero-slide .kicker { color: var(--mint); }
+        .hero-slide h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin: 16px 0;
+            color: #ffffff;
+            border: none;
+        }
+        .hero-slide p {
+            font-size: 1.3rem;
+            color: #d3ecd9;
+            max-width: 850px;
+            margin: 0 auto 30px;
+            line-height: 1.45;
+        }
+        .hero-slide .meta {
+            font-size: 0.95rem;
+            color: var(--mint);
+            font-weight: 700;
+        }
+
+        /* Navigation Controls */
+        #nav-bar {
+            height: 60px;
+            background: rgba(16, 51, 36, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            color: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn {
+            background: var(--emerald);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { background: #237b4f; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--mint);
+            color: var(--mint);
+        }
+        .btn-outline:hover { background: rgba(157, 226, 181, 0.1); }
+        #slide-counter { font-weight: 700; color: var(--mint); font-size: 0.95rem; }
+
+        /* Image tiles */
+        .img-tile {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="deck-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide hero-slide active">
+            <div class="kicker">Team Green tech · 100% Production Milestone</div>
+            <h1>Explainable Tomato Leaf<br> Disease Detection Using AI/ML</h1>
+            <p>High-Precision Foliar Pathology Diagnostics Powered by EfficientNet-B0 and Grad-CAM Visual Attention Heatmaps for Transparent Farm Decisions.</p>
+            <div class="meta">🌱 Team Green tech &nbsp;|&nbsp; 📅 October 2026 &nbsp;|&nbsp; 🍅 Solanaceae Pathology AI</div>
+        </div>
+
+        <!-- Slide 2: Problem Statement -->
+        <div class="slide">
+            <div class="kicker">Context & Justification</div>
+            <div class="title">The Critical Need for Explainable Agronomic AI</div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: var(--red);">🚨 $10B+ Annual Loss</div>
+                    <p>Tomatoes are vulnerable to over 10 devastating foliar pathogens causing 30%–70% harvest loss.</p>
+                    <p>Late detection leads to irreversible canopy collapse before corrective treatments can take effect.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--gold);">🔬 Visual Misdiagnosis</div>
+                    <p>Early Blight and Late Blight look almost identical in early stages, yet require opposite chemical classes.</p>
+                    <p>Bacterial Spot mimics Septoria, wasting capital on ineffective fungicides and driving chemical resistance.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">🧠 The 'Black-Box' Barrier</div>
+                    <p>Standard deep learning systems produce confidence scores with zero spatial justification.</p>
+                    <p>Growers reject opaque models. Combining accuracy with Grad-CAM builds essential diagnostic trust.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Architecture -->
+        <div class="slide">
+            <div class="kicker">System Engineering</div>
+            <div class="title">End-to-End Diagnostic & Explainability Pipeline</div>
+            <div class="grid-4">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">1. Data Ingestion</div>
+                    <ul>
+                        <li>ImageFolder discovery</li>
+                        <li>Stratified 80/20 split</li>
+                        <li>Bilinear 224×224 resize</li>
+                        <li>Flips & rotation augments</li>
+                        <li>ImageNet normalization</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">2. Model Training</div>
+                    <ul>
+                        <li>EfficientNet-B0 backbone</li>
+                        <li>Compound scaling blocks</li>
+                        <li>AdamW optimizer (lr=1e-3)</li>
+                        <li>Cross-Entropy loss</li>
+                        <li>Checkpoint: models/best.pt</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--gold);">3. Explainability</div>
+                    <ul>
+                        <li>Dual-path inference engine</li>
+                        <li>Grad-CAM gradient hooks</li>
+                        <li>Feature map weights &alpha;</li>
+                        <li>Colorized Jet/Turbo maps</li>
+                        <li>Alpha blends & focus masks</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--red);">4. Clinical Delivery</div>
+                    <ul>
+                        <li>Streamlit GUI (4 tabs)</li>
+                        <li>CLI tool with JSON export</li>
+                        <li>Agronomic disease guide</li>
+                        <li>Immediate IPM prescriptions</li>
+                        <li>Docker deployment & tests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 10 Classes -->
+        <div class="slide">
+            <div class="kicker">Pathology Taxonomy</div>
+            <div class="title">10 Monitored Tomato Foliar Conditions</div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">Bacterial, Fungal & Oomycete Pathogens</div>
+                    <ul>
+                        <li><b>Bacterial Spot</b> (<i>Xanthomonas vesicatoria</i>): Dark spots with yellow chlorotic halos.</li>
+                        <li><b>Early Blight</b> (<i>Alternaria solani</i>): Concentric brown rings ('target board') on lower canopy.</li>
+                        <li><b>Late Blight</b> (<i>Phytophthora infestans</i>): Water-soaked dark grease lesions, rapid rot.</li>
+                        <li><b>Leaf Mold</b> (<i>Passalora fulva</i>): Pale upper spots, olive-velvety spores beneath.</li>
+                        <li><b>Septoria Leaf Spot</b> (<i>Septoria lycopersici</i>): Sunken circular spots with gray centers.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">Pests, Viruses & Healthy Foliage</div>
+                    <ul>
+                        <li><b>Spider Mites</b> (<i>Tetranychus urticae</i>): Pinpoint yellow stippling and delicate webbing.</li>
+                        <li><b>Target Spot</b> (<i>Corynespora cassiicola</i>): Zoned circular lesions with cracked centers.</li>
+                        <li><b>Yellow Leaf Curl (TYLCV)</b>: Upward leaf rolling ('spooning'), severe interveinal chlorosis.</li>
+                        <li><b>Mosaic Virus (ToMV)</b>: Alternating light/dark green mosaic patches, leaf distortion.</li>
+                        <li><b>Healthy Leaf</b>: Vibrant green lamina, uniform venation, serrated intact margins.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Model & Transfer Learning -->
+        <div class="slide">
+            <div class="kicker">Model Engineering</div>
+            <div class="title">Convolutional Transfer Learning with EfficientNet-B0</div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">EfficientNet-B0 Backbone</div>
+                    <ul>
+                        <li><b>Compound Scaling:</b> Jointly scales depth, width, and resolution with fixed scaling coefficient.</li>
+                        <li><b>MBConv Blocks:</b> Mobile inverted bottleneck convolutions with depthwise separable layers.</li>
+                        <li><b>Squeeze-and-Excitation:</b> Self-attention dynamically re-weights informative spatial channels.</li>
+                        <li><b>Transfer Learning:</b> Pretrained ImageNet feature representations accelerate convergence on small datasets.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">Training Dynamics</div>
+                    <ul>
+                        <li><b>Optimization:</b> AdamW optimizer with decoupled weight decay (1e-4) to suppress overfitting.</li>
+                        <li><b>Loss Function:</b> Multi-class Cross-Entropy across 10 mutually exclusive categories.</li>
+                        <li><b>Stratification:</b> Seeded 80/20 train/validation split ensuring identical class frequencies.</li>
+                        <li><b>Hardware Support:</b> Auto-detects Apple Silicon MPS, NVIDIA CUDA, or CPU fallback.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Grad-CAM Mathematics -->
+        <div class="slide">
+            <div class="kicker">Explainable AI Methodology</div>
+            <div class="title">Grad-CAM: Gradient-Weighted Class Activation Mapping</div>
+            <div class="card" style="height: 100%;">
+                <div class="card-title" style="color: var(--emerald);">The Mathematics of Visual Attention Extraction</div>
+                <ul>
+                    <li><b>Step 1 · Feature Capture:</b> Forward pass extracts feature activation maps <i>A<sup>k</sup></i> from the final convolutional layer.</li>
+                    <li><b>Step 2 · Class Backpropagation:</b> Gradients of predicted class score <i>Y<sup>c</sup></i> are computed back to <i>A<sup>k</sup></i>: &part;Y<sup>c</sup> / &part;A<sup>k</sup>.</li>
+                    <li><b>Step 3 · Global Pooling:</b> Channel importance weights <i>&alpha;<sub>k</sub><sup>c</sup></i> = (1/Z) &sum;<sub>i</sub> &sum;<sub>j</sub> (&part;Y<sup>c</sup> / &part;A<sub>i,j</sub><sup>k</sup>).</li>
+                    <li><b>Step 4 · Rectified Linear Combination:</b> <i>L<sub>Grad-CAM</sub><sup>c</sup></i> = ReLU(&sum;<sub>k</sub> &alpha;<sub>k</sub><sup>c</sup> A<sup>k</sup>), keeping only positive contributions.</li>
+                    <li><b>Step 5 · Spatial Upscaling & Colormap:</b> Bilinear interpolation scales heatmap back to 224×224, mapped via Jet or Turbo colormaps for clear inspection.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Visual Case Study -->
+        <div class="slide">
+            <div class="kicker">Explainability Demonstration</div>
+            <div class="title">4-View Visual Inspection Grid for Disease Triage</div>
+            <div class="grid-4">
+                <div class="card" style="align-items: center; text-align: center;">
+                    <div class="card-title" style="font-size: 1rem;">1. Original Leaf</div>
+                    <img src="data/samples/early_blight_leaf.jpg" class="img-tile" alt="Original">
+                </div>
+                <div class="card" style="align-items: center; text-align: center;">
+                    <div class="card-title" style="font-size: 1rem;">2. Grad-CAM Heatmap</div>
+                    <img src="results/early_blight_leaf_gradcam_heatmap.png" class="img-tile" alt="Heatmap">
+                </div>
+                <div class="card" style="align-items: center; text-align: center;">
+                    <div class="card-title" style="font-size: 1rem;">3. Superimposed Blend</div>
+                    <img src="results/early_blight_leaf_gradcam_blend.png" class="img-tile" alt="Blend">
+                </div>
+                <div class="card" style="align-items: center; text-align: center;">
+                    <div class="card-title" style="font-size: 1rem;">4. Focus Area</div>
+                    <img src="results/early_blight_leaf_focus.png" class="img-tile" alt="Focus">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Evaluation & Confusion Matrix -->
+        <div class="slide">
+            <div class="kicker">Performance Validation</div>
+            <div class="title">10-Class Confusion Matrix & Pathology Error Dynamics</div>
+            <div class="grid-2">
+                <div class="card" style="align-items: center; justify-content: center;">
+                    <img src="results/confusion_matrix.png" style="max-height: 380px; width: auto; border-radius: 8px;" alt="Confusion Matrix">
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">Error Dynamics & Agronomic Findings</div>
+                    <ul>
+                        <li><b>Early vs Late Blight (11%–12% overlap):</b> Highest mutual error due to shared dark brown necrotic lesion presentation.</li>
+                        <li><b>Bacterial Spot vs Septoria (7%–8% overlap):</b> Secondary error in young seedling phases due to pinpoint spots (<3mm).</li>
+                        <li><b>Highest Precision (82%–85%):</b> Tomato Yellow Leaf Curl Virus (TYLCV) and Healthy foliage exhibit distinct morphology.</li>
+                        <li><b>Clinical Utility:</b> Grad-CAM allows growers to immediately differentiate concentric rings from greasy water-soaked edges.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Model Benchmarks -->
+        <div class="slide">
+            <div class="kicker">Comparative Analysis</div>
+            <div class="title">Multi-Model Architecture Benchmarks & Edge Tradeoffs</div>
+            <div class="card" style="height: 100%;">
+                <div class="card-title" style="color: var(--emerald);">Comparative Convolutional Backbones</div>
+                <ul>
+                    <li><b>EfficientNet-B0 (Baseline):</b> 5.3M parameters | 20.4 MB | 14.2 ms latency | 65.9% val accuracy.<br><i>&rarr; Best for Cloud APIs, high Grad-CAM spatial resolution, and low inference memory.</i></li>
+                    <li><b>ResNet-18:</b> 11.7M parameters | 44.8 MB | 11.5 ms latency | 63.4% val accuracy.<br><i>&rarr; Fast convergence and straightforward residual skip connections.</i></li>
+                    <li><b>ResNet-50:</b> 25.6M parameters | 97.8 MB | 28.6 ms latency | 67.1% val accuracy.<br><i>&rarr; Highest capacity for complex multi-symptom leaves and subtle co-infections.</i></li>
+                    <li><b>MobileNetV3-Large:</b> 5.4M parameters | 21.6 MB | 8.9 ms latency | 64.8% val accuracy.<br><i>&rarr; Optimized for battery-powered edge farm devices, drones, and handheld scanners.</i></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Agronomic Prescriptions -->
+        <div class="slide">
+            <div class="kicker">Actionable Prescriptions</div>
+            <div class="title">Integrated Pest Management (IPM) & Agronomic Rx</div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: var(--red);">🚨 Immediate Field Triage</div>
+                    <ul>
+                        <li>Rogue and burn viral plants (TYLCV / ToMV) to halt reservoir spread.</li>
+                        <li>Halt overhead sprinkler watering to stop spore splashing.</li>
+                        <li>Sanitize tools with 70% alcohol or 20% skim milk solution.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">🌿 Certified Organic Rx</div>
+                    <ul>
+                        <li>OMRI-listed fixed copper sprays (hydroxide/octanoate) for Bacterial Spot.</li>
+                        <li>Bio-fungicides containing Bacillus subtilis and Trichoderma.</li>
+                        <li>Neem oil extracts & predatory mite releases against Spider Mites.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">🧪 Chemical & Cultural</div>
+                    <ul>
+                        <li>Rotate FRAC groups (chlorothalonil M05 with azoxystrobin 11).</li>
+                        <li>Apply barrier mulch to block rain splashing from infected soil.</li>
+                        <li>Enforce 3-year non-Solanaceous crop rotations.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Deployment Readiness -->
+        <div class="slide">
+            <div class="kicker">Production Readiness</div>
+            <div class="title">Deployment Architecture & Engineering Standards</div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">🌐 Interactive Streamlit App</div>
+                    <p>Production dashboard with 4 tabs: Diagnosis & Grad-CAM, Model Benchmarks, Confusion Matrix, and Pathology Guide with 1-click demo samples.</p>
+                    <div class="card-title" style="color: var(--dark-forest); margin-top: 15px;">💻 Standalone CLI Tool</div>
+                    <p>Terminal tool: <code>python -m src.tomato_leaf_detection.predict --explain</code>. Outputs structured JSON and exports heatmap images.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--gold);">🧪 Automated Testing (22 Tests)</div>
+                    <p>100% pytest pass rate covering config validation, model construction, Grad-CAM hooks, colormapping, and metrics calculation.</p>
+                    <div class="card-title" style="color: var(--red); margin-top: 15px;">🐳 Docker & Containerization</div>
+                    <p>Multi-stage Dockerfile and single-command <code>docker-compose up --build</code> ready for production cloud and edge farm server deployment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusion -->
+        <div class="slide">
+            <div class="kicker">Summary & Outlook</div>
+            <div class="title">Conclusion, Limitations & Future Horizons</div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">Key Milestones Achieved</div>
+                    <ul>
+                        <li><b>100% Production Suite:</b> End-to-end trained models, explainable Grad-CAM heatmaps, and agronomic guidance.</li>
+                        <li><b>Verifiable Diagnostics:</b> Replaces opaque predictions with spatial evidence, empowering growers with actionable trust.</li>
+                        <li><b>Edge & Cloud Ready:</b> Benchmarked for both lightweight farm devices and high-throughput cloud APIs.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">Future Roadmap</div>
+                    <ul>
+                        <li><b>Autonomous UAV Scouting:</b> Scaling from single leaf photos to multispectral drone orchard scans.</li>
+                        <li><b>Offline Edge Android App:</b> Quantized INT8 MobileNetV3 models operating without field internet.</li>
+                        <li><b>Cross-Crop Solanaceae:</b> Expanding transfer learning to eggplants, bell peppers, and potatoes.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Bar -->
+    <div id="nav-bar">
+        <button class="btn btn-outline" id="prev-btn" onclick="prevSlide()">&#8592; Previous</button>
+        <div id="slide-counter">Slide 1 of 12</div>
+        <div>
+            <button class="btn btn-outline" onclick="toggleFullscreen()">&#x26F6; Fullscreen</button>
+            <button class="btn" id="next-btn" onclick="nextSlide()" style="margin-left: 10px;">Next &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (index + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('slide-counter').textContent = `Slide ${currentSlide + 1} of ${slides.length}`;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+            if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+            if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+        });
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -240,6 +240,19 @@ with st.sidebar:
     )
 
     st.divider()
+    st.markdown("### 📊 Project Presentation")
+    pptx_file = Path("Explainable_Tomato_Leaf_Disease_Detection_Presentation.pptx")
+    if pptx_file.is_file():
+        with open(pptx_file, "rb") as f:
+            st.download_button(
+                label="📥 Download PowerPoint (.pptx)",
+                data=f.read(),
+                file_name="Explainable_Tomato_Leaf_Disease_Detection_Presentation.pptx",
+                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                use_container_width=True,
+            )
+
+    st.divider()
     st.markdown("### ℹ️ System Information")
     st.caption("• **Milestone:** 100% Production Complete")
     st.caption("• **Backbone:** EfficientNet-B0")
