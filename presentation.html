@@ -196,6 +196,90 @@
             border: 1px solid var(--border);
             margin-top: 10px;
         }
+        /* High-Level In-Depth Flowchart Styling */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: calc(100% - 75px);
+            justify-content: space-between;
+        }
+        .flow-tier {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .flow-tier-header {
+            font-size: 0.72rem;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--emerald);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .flow-node {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid #dbe8e0;
+            border-radius: 10px;
+            padding: 8px 10px;
+            transition: all 0.2s ease;
+        }
+        .flow-node:hover {
+            border-color: var(--emerald);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 51, 36, 0.08);
+        }
+        .flow-node-title {
+            font-size: 0.86rem;
+            font-weight: 750;
+            color: var(--dark-forest);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .flow-node-desc {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+        .flow-badge {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: #eaf5ee;
+            color: var(--emerald);
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        .flow-arrow {
+            color: var(--emerald);
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 0 2px;
+        }
+        .flow-branch-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .branch-card {
+            background: #ffffff;
+            border: 1px solid #dbe8e0;
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
     </style>
 </head>
 <body>
@@ -233,50 +317,103 @@
             </div>
         </div>
 
-        <!-- Slide 3: Architecture -->
+        <!-- Slide 3: Architecture High-Level In-Depth Flowchart -->
         <div class="slide">
-            <div class="kicker">System Engineering</div>
-            <div class="title">End-to-End Diagnostic & Explainability Pipeline</div>
-            <div class="grid-4">
-                <div class="card">
-                    <div class="card-title" style="color: var(--emerald);">1. Data Ingestion</div>
-                    <ul>
-                        <li>ImageFolder discovery</li>
-                        <li>Stratified 80/20 split</li>
-                        <li>Bilinear 224×224 resize</li>
-                        <li>Flips & rotation augments</li>
-                        <li>ImageNet normalization</li>
-                    </ul>
+            <div class="kicker">System Engineering · Complete Technical Flow</div>
+            <div class="title" style="margin-bottom: 12px; font-size: 1.85rem;">High-Level Working Flowchart (In-Depth Architecture)</div>
+            
+            <div class="flow-container">
+                <!-- Tier 1: Data Discovery & Model Training -->
+                <div class="flow-tier">
+                    <div class="flow-tier-header">
+                        <span>Tier 1 · Data Engineering, Backbone Training & Checkpointing</span>
+                        <span class="flow-badge">Offline Optimization Pipeline</span>
+                    </div>
+                    <div class="flow-row">
+                        <div class="flow-node">
+                            <div class="flow-node-title">📁 Data Discovery <span class="flow-badge">data/raw</span></div>
+                            <div class="flow-node-desc">10 Solanaceae disease folders; stratified 80/20 train/val split (seed=42).</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">⚙️ Augmentations <span class="flow-badge">[3, 224, 224]</span></div>
+                            <div class="flow-node-desc">Resize (224×224), RandomFlip, 10° Rotate, ImageNet Normalization.</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">🧠 Conv Backbone <span class="flow-badge">EfficientNet-B0</span></div>
+                            <div class="flow-node-desc">MBConv blocks + Squeeze-and-Excitation; classifier Linear(1280, 10).</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">⚡ Training Loop <span class="flow-badge">AdamW (1e-3)</span></div>
+                            <div class="flow-node-desc">CrossEntropyLoss backprop; saves best val checkpoint to <b>models/best.pt</b>.</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-title" style="color: var(--dark-forest);">2. Model Training</div>
-                    <ul>
-                        <li>EfficientNet-B0 backbone</li>
-                        <li>Compound scaling blocks</li>
-                        <li>AdamW optimizer (lr=1e-3)</li>
-                        <li>Cross-Entropy loss</li>
-                        <li>Checkpoint: models/best.pt</li>
-                    </ul>
+
+                <!-- Tier 2: Dual-Path Explainable Inference -->
+                <div class="flow-tier" style="border-left: 4px solid var(--emerald);">
+                    <div class="flow-tier-header">
+                        <span>Tier 2 · Dual-Path Explainable Inference Engine</span>
+                        <span class="flow-badge">Online Execution (@st.cache_resource)</span>
+                    </div>
+                    <div class="flow-row" style="margin-bottom: 8px;">
+                        <div class="flow-node" style="flex: 0.8; background: #fdfefe;">
+                            <div class="flow-node-title">📸 Query Leaf Input <span class="flow-badge">JPG / PNG</span></div>
+                            <div class="flow-node-desc">Camera upload or instant sample picker; preprocessed to [1, 3, 224, 224].</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node" style="flex: 1.2; background: #fdfefe;">
+                            <div class="flow-node-title">🚀 Model Forward Pass <span class="flow-badge">model.eval()</span></div>
+                            <div class="flow-node-desc">Hooks forward activations <b>A<sup>k</sup> &isin; &reals;<sup>C&times;7&times;7</sup></b> & backward gradients <b>&part;Y<sup>c</sup>/&part;A<sup>k</sup></b>.</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-branch-row">
+                        <!-- Branch A: Classification -->
+                        <div class="branch-card" style="border-left: 3px solid var(--emerald);">
+                            <div class="flow-node-title" style="color: var(--emerald);">Branch A · Statistical Classification <span class="flow-badge">Softmax</span></div>
+                            <div class="flow-node-desc">
+                                &bull; Computes class probability distribution: <b>P(y=c|x) = e<sup>z_c</sup> / &sum; e<sup>z_j</sup></b><br>
+                                &bull; Argmax extraction &rarr; Top-1 disease label + confidence % score.<br>
+                                &bull; Top-3 probability ranking and distribution breakdown bars.
+                            </div>
+                        </div>
+                        <!-- Branch B: Grad-CAM -->
+                        <div class="branch-card" style="border-left: 3px solid var(--gold);">
+                            <div class="flow-node-title" style="color: var(--gold);">Branch B · Grad-CAM Visual Attention <span class="flow-badge">GAP + ReLU</span></div>
+                            <div class="flow-node-desc">
+                                &bull; Global Average Pooling weights: <b>&alpha;<sub>k</sub><sup>c</sup> = (1/Z)&sum;&part;Y<sup>c</sup>/&part;A<sup>k</sup></b><br>
+                                &bull; Rectified combination: <b>L<sub>Grad-CAM</sub> = ReLU(&sum; &alpha;<sub>k</sub><sup>c</sup> A<sup>k</sup>)</b><br>
+                                &bull; Bilinear upsample to 224&times;224, colormap (Jet/Turbo), & alpha blend.
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-title" style="color: var(--gold);">3. Explainability</div>
-                    <ul>
-                        <li>Dual-path inference engine</li>
-                        <li>Grad-CAM gradient hooks</li>
-                        <li>Feature map weights &alpha;</li>
-                        <li>Colorized Jet/Turbo maps</li>
-                        <li>Alpha blends & focus masks</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <div class="card-title" style="color: var(--red);">4. Clinical Delivery</div>
-                    <ul>
-                        <li>Streamlit GUI (4 tabs)</li>
-                        <li>CLI tool with JSON export</li>
-                        <li>Agronomic disease guide</li>
-                        <li>Immediate IPM prescriptions</li>
-                        <li>Docker deployment & tests</li>
-                    </ul>
+
+                <!-- Tier 3: Clinical Delivery & Deployment -->
+                <div class="flow-tier" style="border-left: 4px solid var(--gold);">
+                    <div class="flow-tier-header">
+                        <span>Tier 3 · Agronomic Prescriptions & Multi-Channel Delivery</span>
+                        <span class="flow-badge">100% Production Ready</span>
+                    </div>
+                    <div class="flow-row">
+                        <div class="flow-node">
+                            <div class="flow-node-title">🖼️ 4-View Visual Grid</div>
+                            <div class="flow-node-desc">Original photo, Grad-CAM heatmap, superimposed blend & focus mask.</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">📋 Agronomic Prescriptions</div>
+                            <div class="flow-node-desc">Immediate quarantine, OMRI organic controls (copper/neem), & chemical rotation.</div>
+                        </div>
+                        <div class="flow-arrow">&#10132;</div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">🌐 Multi-Channel Delivery</div>
+                            <div class="flow-node-desc">Interactive Streamlit GUI, standalone CLI tool, Docker container, & 22 pytest tests.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

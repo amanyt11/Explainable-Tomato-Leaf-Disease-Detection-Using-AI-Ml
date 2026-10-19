@@ -16,54 +16,111 @@ All four project milestones have been fully implemented, validated, and tested:
 
 ---
 
-## Architecture Overview
+## Architecture Overview (High-Level In-Depth System Flowchart)
 
 ```mermaid
 flowchart TD
-    %% Phase 1: Data Preparation
-    subgraph Phase1["Phase 1 · Data Discovery & Preprocessing"]
-        A["🍃 Raw Leaf Dataset (data/raw/)"] --> B["⚖️ Stratified 80/20 Train-Val Split"]
-        B --> C["🔄 Augmentation & Normalization (build_transforms)"]
-    end
-
-    %% Phase 2: Model Training & Evaluation
-    subgraph Phase2["Phase 2 · Training & Model Convergence"]
-        C --> D["🧠 Conv Backbone (EfficientNet-B0 / ResNet / MobileNet)"]
-        D --> E["⚡ AdamW Optimization & CrossEntropyLoss"]
-        E --> F["📊 Multi-Class Validation & 10×10 Confusion Matrix"]
-        F --> G[("💾 Best Weights Checkpoint: models/best.pt")]
-    end
-
-    %% Seamless Pipeline Transition
-    G ==>|"Seamless Model Weight Handoff"| H["📦 Cached Model Loader (@st.cache_resource)"]
-
-    %% Phase 3: Explainable Diagnostic Engine
-    subgraph Phase3["Phase 3 · Dual-Path Explainable Inference"]
-        UserLeaf["📸 Uploaded Photo / Built-in Leaf Sample"] --> TensorPrep["⚙️ Bilinear Resize (224×224) & RGB Normalization"]
-        H --> ForwardPass["🚀 Forward Inference Pass (model.eval)"]
-        TensorPrep --> ForwardPass
+    %% ==========================================
+    %% TIER 1: DATA INGESTION & TRANSFORMS
+    %% ==========================================
+    subgraph Tier1["1. Data Discovery, Stratification & Augmentation Layer"]
+        RawData["📁 Raw Dataset (data/raw/)<br/>10 Disease Categories"] --> SplitCheck{"Explicit train/val Split?"}
+        SplitCheck -- "Yes" --> ExplicitSplit["Load datasets.ImageFolder<br/>(data/raw/train & val)"]
+        SplitCheck -- "No" --> StratSplit["sklearn train_test_split<br/>Stratified 80/20 (Seed = 42)"]
         
-        ForwardPass --> ProbBranch["📈 Softmax Probability Distribution & Top-K Ranking"]
-        ForwardPass --> GradCAMBranch["🔍 Grad-CAM Gradient Backprop to Final Conv Layer"]
+        ExplicitSplit --> Transforms["Apply build_transforms() Pipeline"]
+        StratSplit --> Transforms
+
+        Transforms --> AugmentTrain["Train Transform:<br/>• Resize (224×224)<br/>• RandomHorizontalFlip(p=0.5)<br/>• RandomRotation(degrees=10°)<br/>• ToTensor() -> [3, 224, 224]<br/>• Normalize: μ=(0.485, 0.456, 0.406), σ=(0.229, 0.224, 0.225)"]
+        Transforms --> AugmentVal["Val Transform:<br/>• Resize (224×224)<br/>• ToTensor() -> [3, 224, 224]<br/>• Normalize: μ, σ"]
+
+        AugmentTrain --> TrainLoader["DataLoader (Train)<br/>batch_size=32, shuffle=True"]
+        AugmentVal --> ValLoader["DataLoader (Val)<br/>batch_size=32, shuffle=False"]
+    end
+
+    %% ==========================================
+    %% TIER 2: MODEL ARCHITECTURE & TRAINING
+    %% ==========================================
+    subgraph Tier2["2. Convolutional Backbone & Training Mechanics"]
+        TrainLoader --> TrainLoop["Epoch Loop (run_epoch)"]
         
-        GradCAMBranch --> HeatmapOverlay["🎨 Colorized Heatmap & Alpha-Blended Overlay"]
-        ProbBranch --> DiseaseProfileRx["📋 Agronomic Profile & Treatment Prescriptions"]
+        ArchChoice["Backbone Selection (build_model):<br/>• EfficientNet-B0 (MBConv + Squeeze-and-Excitation)<br/>• ResNet-18 / ResNet-50 (Residual Skip Connections)<br/>• MobileNetV3-Large (Hardware-Aware NAS)"] --> InitModel["Replace Head:<br/>model.classifier[1] = nn.Linear(1280, 10)"]
+        InitModel --> TrainLoop
+
+        TrainLoop --> FwdTrain["Forward Pass: outputs = model(images)<br/>Batch Tensor: [32, 10]"]
+        FwdTrain --> CalcLoss["CrossEntropyLoss(outputs, labels)"]
+        CalcLoss --> Backprop["loss.backward() + AdamW.step()<br/>lr=1e-3, weight_decay=1e-4"]
+        
+        Backprop --> EvalVal["Validation Pass (torch.no_grad)<br/>Compute Loss & Top-1 Accuracy"]
+        ValLoader --> EvalVal
+        
+        EvalVal --> CheckBest{"val_accuracy > best_accuracy?"}
+        CheckBest -- "Yes" --> SaveCkpt[("💾 Save Checkpoint (models/best.pt)<br/>• model_state_dict<br/>• class_names (10 classes)<br/>• image_size=224<br/>• training_history")]
+        CheckBest -- "No" --> NextEpoch["Log Metrics & Proceed Next Epoch"]
+        SaveCkpt --> NextEpoch
     end
 
-    %% Phase 4: Diagnostic Delivery
-    subgraph Phase4["Phase 4 · Comprehensive Diagnostic Delivery"]
-        HeatmapOverlay --> VisualGrid["🖼️ 4-View Visual Explanation Grid<br/>(Original · Heatmap · Blend · Focus Mask)"]
-        DiseaseProfileRx --> ActionReport["🚨 Severity Triage & Grower Action Plan"]
-        VisualGrid --> FinalDiagnosis(["✅ Verified Explainable Leaf Diagnosis"])
-        ActionReport --> FinalDiagnosis
+    %% ==========================================
+    %% TIER 3: MODEL DESERIALIZATION BRIDGE
+    %% ==========================================
+    SaveCkpt ==>|"Serialized Weights Bridge"| CacheLoader["📦 Resource Caching (@st.cache_resource)<br/>torch.load(map_location='cpu') -> model.eval()"]
+
+    %% ==========================================
+    %% TIER 4: DUAL-PATH EXPLAINABLE INFERENCE
+    %% ==========================================
+    subgraph Tier3["3. Dual-Path Explainable Inference Engine"]
+        UserInput["📸 Input Query Leaf:<br/>• Live Camera Upload (JPG/PNG)<br/>• Built-in Samples (data/samples/)"] --> InputTensor["Bilinear Resize (224×224)<br/>ToTensor() + Normalize<br/>unsqueeze(0) -> [1, 3, 224, 224]"]
+        
+        CacheLoader --> ModelReady["Inference Backbone Ready<br/>Registers Forward & Backward Hooks"]
+        InputTensor --> ModelReady
+
+        %% Path A: Classification
+        ModelReady --> BranchA["Forward Pass (torch.no_grad)<br/>Logits: z ∈ ℝ¹⁰"]
+        BranchA --> Softmax["Softmax: P(y=c|x) = e^zc / ∑ e^zj"]
+        Softmax --> TopKRank["Top-K Ranking & Argmax<br/>• Predicted Disease Index<br/>• Confidence Score %<br/>• Distribution Bars"]
+
+        %% Path B: Grad-CAM
+        ModelReady --> BranchB["Forward Hook: Capture Activations<br/>A^k ∈ ℝ^{C × 7 × 7} (Last Conv Layer)"]
+        BranchB --> GradBackprop["Backward Pass with Target Score Y^c<br/>Backward Hook: Capture Gradients ∂Y^c / ∂A^k"]
+        GradBackprop --> GAP["Global Average Pooling (Weights α_k^c):<br/>α_k^c = (1/Z) ∑_i ∑_j (∂Y^c / ∂A_{i,j}^k)"]
+        GAP --> WeightedReLU["Weighted Sum + ReLU:<br/>L_GradCAM = ReLU(∑_k α_k^c A^k)"]
+        WeightedReLU --> Upsample["Bilinear Upsample (7×7 -> 224×224)<br/>Min-Max Normalize -> [0.0, 1.0]"]
+        Upsample --> ColorMap["Apply Colormap (Jet, Turbo, Viridis)<br/>-> 3-Channel RGB Heatmap"]
+        ColorMap --> BlendOverlay["Alpha Blending:<br/>I_blend = (1 - α)·I_orig + α·I_heatmap"]
+        ColorMap --> FocusMask["Attention Thresholding (Heatmap ≥ 0.5)<br/>-> High-Activation Lesion Mask"]
     end
 
-    style G fill:#1b4d32,stroke:#2ecc71,stroke-width:2px,color:#fff
-    style FinalDiagnosis fill:#123a2a,stroke:#27ae60,stroke-width:3px,color:#fff
-    style Phase1 fill:#f9fcf9,stroke:#d0e6d6,stroke-width:1px
-    style Phase2 fill:#f4fbf5,stroke:#bce0c8,stroke-width:1px
-    style Phase3 fill:#f0f9f3,stroke:#a6d8b6,stroke-width:1px
-    style Phase4 fill:#eaf7ee,stroke:#89cca0,stroke-width:1px
+    %% ==========================================
+    %% TIER 5: CLINICAL AGRONOMY & DELIVERY
+    %% ==========================================
+    subgraph Tier4["4. Agronomic Prescription & Multi-Channel Delivery"]
+        TopKRank --> KnowledgeBase["📖 Agronomic Lookup (disease_info.py)"]
+        KnowledgeBase --> BioProfile["Pathogen Taxonomy & Severity<br/>(Bacterium, Fungus, Oomycete, Virus, Pest)"]
+        KnowledgeBase --> ActionPlan["🚨 Immediate Containment Triage<br/>• Rogue infected tissue<br/>• Cease overhead irrigation<br/>• Disinfect tools (70% alcohol)"]
+        KnowledgeBase --> TreatmentPlan["🌿 Integrated Pest Management (IPM)<br/>• Certified Organic: Copper, Bacillus subtilis, Neem<br/>• Chemical: FRAC rotation (M05 chlorothalonil, 11 azoxystrobin)<br/>• Prevention: Drip irrigation, 3-yr rotation"]
+
+        BlendOverlay --> VisualInspectionGrid["🖼️ 4-View Visual Explanation Grid<br/>1. Original Leaf Image<br/>2. Grad-CAM Heatmap Tile<br/>3. Superimposed Blend Overlay<br/>4. High-Attention Focus Area"]
+        FocusMask --> VisualInspectionGrid
+
+        BioProfile --> FinalDelivery["✅ Verified Actionable Diagnostic Report"]
+        ActionPlan --> FinalDelivery
+        TreatmentPlan --> FinalDelivery
+        VisualInspectionGrid --> FinalDelivery
+    end
+
+    FinalDelivery --> StreamlitUI["🌐 Interactive Streamlit App (localhost:8501)"]
+    FinalDelivery --> CLITool["💻 Standalone CLI (predict.py --explain)"]
+    FinalDelivery --> DockerDeploy["🐳 Dockerized Microservice Container"]
+
+    style SaveCkpt fill:#1b4d32,stroke:#2ecc71,stroke-width:2px,color:#fff
+    style FinalDelivery fill:#103324,stroke:#27ae60,stroke-width:3px,color:#fff
+    style StreamlitUI fill:#1d5c40,stroke:#85b79a,stroke-width:2px,color:#fff
+    style CLITool fill:#1d5c40,stroke:#85b79a,stroke-width:2px,color:#fff
+    style DockerDeploy fill:#1d5c40,stroke:#85b79a,stroke-width:2px,color:#fff
+    style Tier1 fill:#f9fcf9,stroke:#d0e6d6,stroke-width:1px
+    style Tier2 fill:#f4fbf5,stroke:#bce0c8,stroke-width:1px
+    style Tier3 fill:#f0f9f3,stroke:#a6d8b6,stroke-width:1px
+    style Tier4 fill:#eaf7ee,stroke:#89cca0,stroke-width:1px
 ```
 
 ---
