@@ -482,6 +482,46 @@
                         <li><b>Offline Edge Android App:</b> Quantized INT8 MobileNetV3 models operating without field internet.</li>
                         <li><b>Cross-Crop Solanaceae:</b> Expanding transfer learning to eggplants, bell peppers, and potatoes.</li>
                     </ul>
+        <!-- Slide 13: Team Work Distribution -->
+        <div class="slide">
+            <div class="kicker">Team Green Tech · Project Execution</div>
+            <div class="title">Work Distribution & Member Role Allocation</div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title" style="color: var(--emerald);">Member 1 · AI/ML Lead</div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--emerald); margin-bottom: 8px;">Data & Model Engineering</div>
+                    <ul>
+                        <li><b>Modules:</b> <code>data.py</code>, <code>model.py</code>, <code>train.py</code>, <code>config.py</code></li>
+                        <li>Dataset discovery, stratified 80/20 train/validation splitting.</li>
+                        <li>Data augmentations (flips, rotations, ImageNet normalization).</li>
+                        <li>Multi-architecture backbones (EfficientNet, ResNet, MobileNet).</li>
+                        <li>Model training engine with AdamW, lr scheduling, and checkpointing.</li>
+                        <li><b>Presentation:</b> Slides 2, 4, 5.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--gold);">Member 2 · XAI Lead</div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-bottom: 8px;">Explainability & Pathology</div>
+                    <ul>
+                        <li><b>Modules:</b> <code>explainability.py</code>, <code>disease_info.py</code>, <code>evaluate.py</code></li>
+                        <li>Grad-CAM mathematical hooks & gradient backprop implementation.</li>
+                        <li>Colorized heatmaps (Jet/Turbo), alpha blends, & focus masks.</li>
+                        <li>Agronomic knowledge base & IPM prescriptions for 10 classes.</li>
+                        <li>10×10 Confusion matrix generator & pathology error dynamics.</li>
+                        <li><b>Presentation:</b> Slides 6, 7, 8, 10.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--dark-forest);">Member 3 · Full-Stack Lead</div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--dark-forest); margin-bottom: 8px;">UI, Deployment & Testing</div>
+                    <ul>
+                        <li><b>Modules:</b> <code>app.py</code>, <code>predict.py</code>, <code>Dockerfile</code>, <code>tests/test_project.py</code></li>
+                        <li>Interactive Streamlit web app across 4 tabs with smooth CSS animations.</li>
+                        <li>Standalone CLI inference tool with batch processing & JSON output.</li>
+                        <li>Comprehensive automated test suite (22 pytest tests).</li>
+                        <li>Multi-stage Dockerfile, docker-compose, and presentation generation.</li>
+                        <li><b>Presentation:</b> Slides 1, 3, 9, 11, 12, 13.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -491,7 +531,7 @@
     <!-- Navigation Bar -->
     <div id="nav-bar">
         <button class="btn btn-outline" id="prev-btn" onclick="prevSlide()">&#8592; Previous</button>
-        <div id="slide-counter">Slide 1 of 12</div>
+        <div id="slide-counter">Slide 1 of 13</div>
         <div>
             <button class="btn btn-outline" onclick="toggleFullscreen()">&#x26F6; Fullscreen</button>
             <button class="btn" id="next-btn" onclick="nextSlide()" style="margin-left: 10px;">Next &#8594;</button>

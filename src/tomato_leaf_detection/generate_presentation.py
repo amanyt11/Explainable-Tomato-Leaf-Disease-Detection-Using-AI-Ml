@@ -725,12 +725,94 @@ def create_deck(output_path: Path = Path("Explainable_Tomato_Leaf_Disease_Detect
         "Offline Mobile Application: Quantized INT8 MobileNetV3 models running offline on Android farm devices without internet.",
         "Cross-Crop Solanaceae Expansion: Transferring pretrained weights to eggplants, potatoes, and peppers.",
     ]
-    for fut in future_pts:
-        p = tf_r.add_paragraph()
-        p.text = f"🚀 {fut}"
-        p.font.size = Pt(13)
-        p.font.color.rgb = C_TEXT_DARK
-        p.space_before = Pt(12)
+    # =========================================================================
+    # SLIDE 13: TEAM WORK DISTRIBUTION (3 MEMBERS)
+    # =========================================================================
+    s13 = prs.slides.add_slide(blank_layout)
+    set_slide_background(s13, C_BG_LIGHT)
+    add_header(s13, "Team Green Tech · Project Execution", "Work Distribution & Member Role Allocation")
+
+    w_mem = Inches(3.7)
+    g_mem = Inches(0.31)
+    t_mem = Inches(1.8)
+    h_mem = Inches(5.1)
+
+    members = [
+        (
+            "Member 1 · AI/ML & Data Lead",
+            "Data & Model Engineering",
+            C_EMERALD,
+            [
+                "Modules: data.py, model.py, train.py, config.py",
+                "Dataset ingestion & stratified 80/20 train/validation splitting",
+                "Data augmentations: flips, rotations, ImageNet normalization",
+                "Multi-architecture CNN backbones (EfficientNet, ResNet, MobileNet)",
+                "Model training engine with AdamW, lr scheduling, and checkpointing",
+                "Presentation Delivery: Slides 2, 4, 5 (Problem, Taxonomy, Model)",
+            ],
+        ),
+        (
+            "Member 2 · XAI & Agronomy Lead",
+            "Explainability & Pathology",
+            C_GOLD,
+            [
+                "Modules: explainability.py, disease_info.py, evaluate.py",
+                "Grad-CAM mathematical hooks & gradient backprop implementation",
+                "Colorized heatmaps (Jet/Turbo), alpha blends, & focus masks",
+                "Agronomic knowledge base & IPM prescriptions for 10 classes",
+                "10×10 Confusion matrix generator & pathology error dynamics",
+                "Presentation Delivery: Slides 6, 7, 8, 10 (Grad-CAM, Error Analysis, IPM)",
+            ],
+        ),
+        (
+            "Member 3 · Full-Stack & MLOps Lead",
+            "UI, Deployment & Testing",
+            C_DARK_FOREST,
+            [
+                "Modules: app.py, predict.py, Dockerfile, tests/test_project.py",
+                "Interactive Streamlit web app across 4 tabs with smooth CSS animations",
+                "Standalone CLI inference tool with batch processing & JSON output",
+                "Comprehensive automated test suite (22 pytest unit & integration tests)",
+                "Multi-stage Dockerfile, docker-compose, and presentation generation",
+                "Presentation Delivery: Slides 1, 3, 9, 11, 12, 13 (Intro, Benchmarks, Ops)",
+            ],
+        ),
+    ]
+
+    for idx, (m_title, m_sub, m_col, m_items) in enumerate(members):
+        l_pos = Inches(0.8) + idx * (w_mem + g_mem)
+        add_card(s13, l_pos, t_mem, w_mem, h_mem)
+
+        # Header tag on card
+        tag = s13.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, l_pos, t_mem, w_mem, Inches(0.9))
+        tag.fill.solid()
+        tag.fill.fore_color.rgb = m_col
+        tag.line.fill.background()
+
+        tb = s13.shapes.add_textbox(l_pos + Inches(0.1), t_mem + Inches(0.08), w_mem - Inches(0.2), Inches(0.4))
+        p = tb.text_frame.paragraphs[0]
+        p.text = m_title
+        p.font.size = Pt(12)
+        p.font.bold = True
+        p.font.color.rgb = C_TEXT_LIGHT
+        p.alignment = PP_ALIGN.CENTER
+
+        p_sub = tb.text_frame.add_paragraph()
+        p_sub.text = m_sub
+        p_sub.font.size = Pt(10)
+        p_sub.font.color.rgb = RGBColor(230, 245, 235)
+        p_sub.alignment = PP_ALIGN.CENTER
+
+        # Content bullets
+        tb_body = s13.shapes.add_textbox(l_pos + Inches(0.15), t_mem + Inches(1.05), w_mem - Inches(0.3), h_mem - Inches(1.2))
+        tf_b = tb_body.text_frame
+        tf_b.word_wrap = True
+        for i, item in enumerate(m_items):
+            p = tf_b.paragraphs[0] if i == 0 else tf_b.add_paragraph()
+            p.text = f"✓ {item}"
+            p.font.size = Pt(11)
+            p.font.color.rgb = C_TEXT_DARK
+            p.space_before = Pt(6)
 
     # Save presentation
     prs.save(str(output_path))
