@@ -259,3 +259,27 @@ def test_predict_image_with_checkpoint(tmp_path: Path) -> None:
     assert len(results["top_predictions"]) >= 1
     assert "blended_image" in results["saved_explanations"]
     assert Path(results["saved_explanations"]["blended_image"]).is_file()
+
+
+# =============================================================================
+# 7. Ensemble & Multi-Architecture Extension Tests
+# =============================================================================
+
+
+def test_mobilenet_v2_and_densenet121_build() -> None:
+    m_mob = build_model(SAMPLE_CLASSES, pretrained=False, architecture="mobilenet_v2")
+    assert m_mob is not None
+    assert getattr(m_mob, "architecture_name") == "mobilenet_v2"
+
+    m_dense = build_model(SAMPLE_CLASSES, pretrained=False, architecture="densenet121")
+    assert m_dense is not None
+    assert getattr(m_dense, "architecture_name") == "densenet121"
+
+
+def test_ensemble_specs_contain_new_models() -> None:
+    specs = get_architecture_specs()
+    assert "mobilenet_v2" in specs
+    assert "densenet121" in specs
+    assert specs["mobilenet_v2"]["family"] == "Inverted Residual CNN"
+    assert specs["densenet121"]["family"] == "Densely Connected CNN"
+
